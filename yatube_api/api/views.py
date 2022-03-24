@@ -5,10 +5,10 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
+# from posts.models import Post, Group, Follow
 from posts.models import Post, Group, Follow
-from api.serializers import PostSerializer, GroupSerializer,\
-    CommentSerializer, FollowSerializer
-from api.premissions import IsAuthorOrReadOnly
+from .serializers import PostSerializer, GroupSerializer, CommentSerializer, FollowSerializer
+from .permissions import IsAuthorOrReadOnly
 
 
 class PostViewSet(viewsets.ModelViewSet):
