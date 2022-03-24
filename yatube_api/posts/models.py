@@ -58,4 +58,3 @@ class Follow(models.Model):
                 fields=['follower', 'following'],
                 name='unique_follow')
         ]
-
