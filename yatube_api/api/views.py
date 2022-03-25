@@ -1,11 +1,11 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from django.shortcuts import get_object_or_404
 from rest_framework import filters
 
-from .mixins import BaseViewSet
+# from .mixins import BaseViewSet
 from posts.models import Post, Group
 from .serializers import (PostSerializer, GroupSerializer,
                           CommentSerializer, FollowSerializer)
@@ -41,16 +41,33 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, post=post)
 
 
-class FollowViewSet(BaseViewSet):
+class FollowViewSet(mixins.CreateModelMixin,
+                    mixins.ListModelMixin,
+                    viewsets.GenericViewSet):
     serializer_class = FollowSerializer
-    permission_classes = [IsAuthenticated]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ('user__username', 'following__username', )
+    permissions_classes = (IsAuthenticated, )
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('following__username', 'user__username',)
+    ordering_fields = ('following__username',)
 
     def get_queryset(self):
         user = self.request.user
-        queryset = user.follower.all()
+        queryset = user.followers
         return queryset
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+# class FollowViewSet(BaseViewSet):
+#     serializer_class = FollowSerializer
+#     permission_classes = [IsAuthenticated]
+#     filter_backends = [filters.SearchFilter]
+#     search_fields = ('user__username', 'following__username', )
+#
+#     def get_queryset(self):
+#         user = self.request.user
+#         queryset = user.follower.all()
+#         return queryset
+#
+#     def perform_create(self, serializer):
+#         serializer.save(user=self.request.user)
