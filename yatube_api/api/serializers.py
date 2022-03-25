@@ -35,7 +35,7 @@ class FollowSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(
         queryset=User.objects.all(),
         slug_field='username',
-        default=serializers.CurrentUserDefault()
+        default=serializers.Curre   ntUserDefault()
     )
     following = serializers.SlugRelatedField(
         queryset=User.objects.all(),
@@ -48,11 +48,11 @@ class FollowSerializer(serializers.ModelSerializer):
         return following
 
     class Meta:
-        fields = '__all__'
+        fields = ('user', 'following',)
         model = Follow
         validators = [
             UniqueTogetherValidator(
                 queryset=Follow.objects.all(),
-                fields=['user', 'following'],
+                fields=('user', 'following'),
             )
         ]
